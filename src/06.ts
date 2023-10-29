@@ -1,187 +1,116 @@
 import { createProgramFromSources } from './utils'
 
-import vs from './shaders/05.vert'
-import fs from './shaders/05.frag'
+import vs from './shaders/06.vert'
+import fs from './shaders/06.frag'
 
-function main() {
+const image = new Image()
+image.src = './resources/leaves.jpg'
+image.onload = () => {
+  render(image)
+}
+
+function render(image: HTMLImageElement) {
   const canvas = document.querySelector('#c') as HTMLCanvasElement
   const gl = canvas.getContext('webgl2')!
 
   const program = createProgramFromSources(gl, [vs, fs])
 
-  const positionLocation = gl.getAttribLocation(program, 'a_position')
-  const colorLocation = gl.getAttribLocation(program, 'a_color')
+  const positionAttributeLocation = gl.getAttribLocation(program, 'a_position')
+  const texCoordAttributeLocation = gl.getAttribLocation(program, 'a_texCoord')
 
-  const matrixLocation = gl.getUniformLocation(program, 'u_matrix')
+  const resolutionLocation = gl.getUniformLocation(program, 'u_resolution')
+  const imageLocation = gl.getUniformLocation(program, 'u_image')
 
   const vao = gl.createVertexArray()
+
   gl.bindVertexArray(vao)
 
-  const buffer = gl.createBuffer()
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+  const positionBuffer = gl.createBuffer()
 
-  setGeometry(gl)
+  gl.enableVertexAttribArray(positionAttributeLocation)
 
-  gl.enableVertexAttribArray(positionLocation)
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
 
+  const size = 2
   const type = gl.FLOAT
   const normalize = false
   const stride = 0
   const offset = 0
 
-  gl.vertexAttribPointer(positionLocation, 2, type, normalize, stride, offset)
+  gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset)
 
-  const buffer2 = gl.createBuffer()
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer2)
+  const texCoordBuffer = gl.createBuffer()
+  gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer)
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    0.0, 0.0,
+    1.0, 0.0,
+    0.0, 1.0,
+    0.0, 1.0,
+    1.0, 0.0,
+    1.0, 1.0,
+  ]), gl.STATIC_DRAW)
 
-  setColor2(gl)
-  gl.enableVertexAttribArray(colorLocation)
+  gl.enableVertexAttribArray(texCoordAttributeLocation)
 
-  // gl.vertexAttribPointer(colorLocation, 4, type, normalize, stride, offset)
-  gl.vertexAttribPointer(colorLocation, 4, gl.UNSIGNED_BYTE, true, stride, offset)
+  gl.vertexAttribPointer(texCoordAttributeLocation, size, type, normalize, stride, offset)
 
-  const translation = [200, 150]
+  const texture = gl.createTexture()
 
-  let angleInRadians = 0
+  gl.activeTexture(gl.TEXTURE0 + 0)
 
-  const scale = [1, 1]
+  gl.bindTexture(gl.TEXTURE_2D, texture)
 
-  drawScene()
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 
-  function updatePosition(index: number): SlideUpdate {
-    return function (event, ui) {
-      translation[index] = ui.value
-      drawScene()
-    }
-  }
+  const mipLevel = 0
+  const internalFormat = gl.RGBA
+  const srcFormat = gl.RGBA
+  const srcType = gl.UNSIGNED_BYTE
 
-  const updateAngle: SlideUpdate = (event, ui) => {
-    let angleInDegress = 360 - ui.value
-    angleInRadians = angleInDegress * (Math.PI / 180)
-    drawScene()
-  }
+  gl.texImage2D(gl.TEXTURE_2D, mipLevel, internalFormat, srcFormat, srcType, image)
 
-  function updateScale(index: number): SlideUpdate {
-    return function (event, ui) {
-      scale[index] = ui.value
-      drawScene()
-    }
-  }
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
-  webglLessonsUI.setupSlider('#x', {
-    value: translation[0],
-    slide: updatePosition(0),
-    max: gl.canvas.width,
-  })
+  gl.clearColor(0, 0, 0, 0)
 
-  webglLessonsUI.setupSlider('#y', {
-    value: translation[1],
-    slide: updatePosition(1),
-    max: gl.canvas.height,
-  })
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-  webglLessonsUI.setupSlider('#angle', {
-    slide: updateAngle,
-    max: 360,
-  })
+  gl.useProgram(program)
 
-  webglLessonsUI.setupSlider('#scaleX', {
-    value: scale[0],
-    slide: updateScale(0),
-    min: -5,
-    max: 5,
-    step: 0.01,
-    precision: 2,
-  })
+  gl.bindVertexArray(vao)
 
-  webglLessonsUI.setupSlider('#scaleY', {
-    value: scale[1],
-    slide: updateScale(1),
-    min: -5,
-    max: 5,
-    step: 0.01,
-    precision: 2,
-  })
+  gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height)
 
-  function drawScene() {
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+  gl.uniform1i(imageLocation, 0)
 
-    gl.clearColor(0,0,0,0)
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
 
-    let matrix = m3.projection(gl.canvas.width, gl.canvas.height)
+  setRectangle(gl, 0, 0, image.width, image.height)
 
-    matrix = m3.translate(matrix, translation[0], translation[1])
-    matrix = m3.rotate(matrix, angleInRadians)
-    matrix = m3.scale(matrix, scale[0], scale[1])
+  const primitiveType = gl.TRIANGLES
+  const first = 0
+  const count = 6
 
-    gl.useProgram(program)
-    gl.bindVertexArray(vao)
+  gl.drawArrays(primitiveType, first, count)
 
-    gl.uniformMatrix3fv(matrixLocation, false, matrix)
-
-    const first = 0
-    const count = 6
-    gl.drawArrays(gl.TRIANGLES, first, count)
-  }
 }
 
-function setGeometry(gl: WebGL2RenderingContext) {
-  gl.bufferData(
-    gl.ARRAY_BUFFER,
-    new Float32Array([
-      -150, -100,
-      150, -100,
-      -150, 100,
-      150, -100,
-      -150, 100,
-      150, 100]),
-    gl.STATIC_DRAW
-  )
+function setRectangle(gl: WebGL2RenderingContext, x: number, y: number, width: number, height: number) {
+
+  const x1 = x
+  const x2 = x + width
+  const y1 = y
+  const y2 = y + height
+
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    x1, y1,
+    x2, y1,
+    x1, y2,
+    x1, y2,
+    x2, y1,
+    x2, y2,
+  ]), gl.STATIC_DRAW)
 }
-
-function setColor(gl: WebGL2RenderingContext) {
-  const r1 = Math.random()
-  const g1 = Math.random()
-  const b1 = Math.random()
-  const r2 = Math.random()
-  const g2 = Math.random()
-  const b2 = Math.random()
-
-  gl.bufferData(
-    gl.ARRAY_BUFFER,
-    new Float32Array([
-      r1, b1, g1, 1,
-      r1, b1, g1, 1,
-      r2, b1, g1, 1,
-      r2, b2, g2, 1,
-      r2, b2, g2, 1,
-      r2, b2, g2, 1]),
-    gl.STATIC_DRAW
-  )
-}
-
-function setColor2(gl: WebGL2RenderingContext) {
-  const r1 = Math.random() * 256
-  const g1 = Math.random() * 256
-  const b1 = Math.random() * 256
-  const r2 = Math.random() * 256
-  const g2 = Math.random() * 256
-  const b2 = Math.random() * 256
-
-  gl.bufferData(
-    gl.ARRAY_BUFFER,
-    new Float32Array(
-      [
-        r1, b1, g1, 255,
-        r1, b1, g1, 255,
-        r2, b1, g1, 255,
-        r2, b2, g2, 255,
-        r2, b2, g2, 255,
-        r2, b2, g2, 255
-      ]),
-    gl.STATIC_DRAW
-  )
-}
-
-main()

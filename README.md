@@ -2,7 +2,7 @@
 
 ## 示例
 
-[Demo List](./dist/index.html)
+[Demo List](https://aliothor.github.io/webgl_learn/dist/index.html)
 
 ## WebGL2参考资料
 

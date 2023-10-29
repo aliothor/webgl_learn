@@ -22,6 +22,10 @@ module.exports = function (env, argv) {
       filename: '05',
       demoname: 'radom rectangle color',
     },
+    {
+      filename: '06',
+      demoname: 'image texture',
+    },
   ]
 
   const entryConfig = {}
