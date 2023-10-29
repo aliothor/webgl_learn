@@ -1,7 +1,28 @@
 const { defineConfig } = require('@rspack/cli')
 
 module.exports = function (env, argv) {
-  const entryFile = ['01', '02', '03','04','05']
+  const entryFile = [
+    {
+      filename: '01',
+      demoname: 'triangle',
+    },
+    {
+      filename: '02',
+      demoname: 'single rectangle',
+    },
+    {
+      filename: '03',
+      demoname: 'radom rectangle',
+    },
+    {
+      filename: '04',
+      demoname: 'radom triangle color',
+    },
+    {
+      filename: '05',
+      demoname: 'radom rectangle color',
+    },
+  ]
 
   const entryConfig = {}
 
@@ -14,11 +35,12 @@ module.exports = function (env, argv) {
   ]
 
   entryFile.forEach((i) => {
-    entryConfig[i] = `./src/${i}.ts`
+    const key = i.filename
+    entryConfig[key] = `./src/${key}.ts`
     const item = {
       template: './template/demo.html',
-      filename: `${i}.html`,
-      chunks: [i],
+      filename: `${key}.html`,
+      chunks: [key],
     }
     htmlConfig.push(item)
   })
@@ -37,6 +59,14 @@ module.exports = function (env, argv) {
 
     builtins: {
       html: htmlConfig,
+      copy: {
+        patterns: [
+          {
+            from: 'public/resources',
+            to: 'resources',
+          },
+        ],
+      },
     },
     module: {
       rules: [
