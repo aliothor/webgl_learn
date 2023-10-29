@@ -1,7 +1,7 @@
 const { defineConfig } = require('@rspack/cli')
 
 module.exports = function (env, argv) {
-  const entryFile = ['01', '02', '03']
+  const entryFile = ['01', '02', '03','04','05']
 
   const entryConfig = {}
 
