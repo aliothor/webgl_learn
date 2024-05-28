@@ -13,7 +13,7 @@ export default async () => {
         "06": "./templates/06.html",
       },
       output: {
-        'publicPath': "/webgl-learn/"
+        'publicPath': "/webgl_learn/"
       },
       presetEnv: false,
       sourcemap: false
