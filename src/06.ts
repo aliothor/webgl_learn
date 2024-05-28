@@ -1,7 +1,7 @@
 import { createProgramFromSources } from './utils'
 
-import vs from './shaders/06.vert'
-import fs from './shaders/06.frag'
+import vs from './shaders/06.vert?raw'
+import fs from './shaders/06.frag?raw'
 
 const image = new Image()
 image.src = './resources/leaves.jpg'
@@ -74,7 +74,7 @@ function render(image: HTMLImageElement) {
 
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
-  gl.clearColor(0, 0, 0, 0)
+  gl.clearColor(51 / 255, 51 / 255, 77 / 255, 1)
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 

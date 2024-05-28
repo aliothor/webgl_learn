@@ -72,7 +72,7 @@ function main() {
 
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
-  gl.clearColor(0, 0, 0, 1.0)
+  gl.clearColor(51 / 255, 51 / 255, 77 / 255, 1)
   gl.clear(gl.COLOR_BUFFER_BIT)
 
   gl.useProgram(program)

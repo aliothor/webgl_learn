@@ -1,9 +1,7 @@
 import { createProgram, createShader } from './utils'
 
-import vertexShaderSource from './shaders/01.vert'
-import fragmentShaderSource from './shaders/01.frag'
-
-console.log(vertexShaderSource,fragmentShaderSource);
+import vertexShaderSource from './shaders/01.vert?raw'
+import fragmentShaderSource from './shaders/01.frag?raw'
 
 
 function main() {
@@ -45,7 +43,7 @@ function main() {
 
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
-  gl.clearColor(0, 1.0, 1.0, 1.0)
+  gl.clearColor(51 / 255, 51 / 255, 77 / 255, 1.)
 
   gl.clear(gl.COLOR_BUFFER_BIT)
 

@@ -1,7 +1,7 @@
 import { createProgramFromSources } from './utils'
 
-import vs from './shaders/05.vert'
-import fs from './shaders/05.frag'
+import vs from './shaders/05.vert?raw'
+import fs from './shaders/05.frag?raw'
 
 function main() {
   const canvas = document.querySelector('#c') as HTMLCanvasElement
@@ -106,7 +106,7 @@ function main() {
   function drawScene() {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
-    gl.clearColor(0,0,0,0)
+    gl.clearColor(51 / 255, 51 / 255, 77 / 255, 1)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
     let matrix = m3.projection(gl.canvas.width, gl.canvas.height)

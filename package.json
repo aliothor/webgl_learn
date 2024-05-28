@@ -2,17 +2,20 @@
   "name": "webgl_learn",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "dev": "rspack serve",
-    "build": "rspack build"
+    "dev": "farm",
+    "start": "farm",
+    "build": "farm build",
+    "preview": "farm preview",
+    "clean": "farm clean"
   },
   "keywords": [],
   "author": "aliothor",
   "license": "MIT",
   "devDependencies": {
-    "@rspack/cli": "^0.3.8",
-    "@types/node": "^20.8.9",
-    "typescript": "^5.2.2"
+    "@farmfe/cli": "^1.0.2",
+    "@farmfe/core": "^1.1.12",
+    "@types/node": "^20.12.12",
+    "typescript": "^5.4.5"
   }
 }

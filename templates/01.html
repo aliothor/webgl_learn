@@ -3,18 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebGL2学习DEMO</title>
-    <script src="./resources/webgl-utils.js"></script>
-    <script src="./resources/webgl-lessons-ui.js"></script>
-    <script src="./resources/m3.js"></script>
+    <title>triangle</title>
+    <script src="../public/resources/webgl-utils.js"></script>
+    <script src="../public/resources/webgl-lessons-ui.js"></script>
+    <script src="../public/resources/m3.js"></script>
     <style>
       * {
         margin: 0;
         padding: 0;
       }
 
+      body{
+        display: flex;
+        justify-content: center;
+        padding-top: 24px;
+      }
+
       #uiContainer {
-        display: inline-block;
+        display: none;
         border: 1px solid #17151545;
         border-radius: 5px;
         padding: 10px 20px;
@@ -34,5 +40,7 @@
         <div id="scaleY"></div>
       </div>
     </div>
+
+    <script src="../src/01.ts"></script>
   </body>
 </html>
